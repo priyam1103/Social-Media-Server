@@ -67,7 +67,7 @@ exports.signUp = async function (req, res) {
           text: `You otp is ${user_.verification.otp}`,
           from: "Duskygram",
           to: user_.emailId,
-          subject: "testing emailjs",
+          subject: "Duskygram OTP",
         },
         (err, message) => {
           res
@@ -99,7 +99,7 @@ exports.SignIn = async function (req, res) {
               text: `You otp is ${user_.verification.otp}`,
               from: "Duskygram",
               to: user_.emailId,
-              subject: "testing emailjs",
+              subject: "Duskygram OTP",
             },
             (err, message) => {
               console.log(err || message);
@@ -163,10 +163,10 @@ exports.ResetPassToken = async function (req, res) {
       const resetToken = await user.generateResetPasswordToken();
       client.send(
         {
-          text: `http://localhost:3000/auth/reset-password/${resetToken}`,
+          text: `http://https://social-media-client.vercel.app/auth/reset-password/${resetToken}`,
           from: "Duskygram",
           to: user.emailId,
-          subject: "testing emailjs",
+          subject: "Duskygram - Reset Password Link",
         },
         (err, message) => {
           console.log(err || message);

@@ -1,4 +1,5 @@
 const User = require("../model/user");
+const Username = require("../model/username");
 const bcrypt = require("bcrypt");
 const config = require("../service/config");
 const { SMTPClient } = require("emailjs");
@@ -26,31 +27,41 @@ exports.me = async function (req, res) {
     if (!user_) {
       res.status(401).json({ message: "Invalid session " });
     } else {
-      res.status(200).json({ user_ });
+      const token = await user_.generateAuthToken();
+      console.log(user_);
+      res.status(200).json({ token, user_ });
     }
   } catch (err) {}
 };
 exports.signUp = async function (req, res) {
   try {
     const { emailId, password } = req.body;
-    
+
     const user = await User.findOne({
       $or: [{ emailId: emailId }],
     });
     if (user)
       res.status(401).json({
-        type:"emailId",
-        message:"Email id already exists."
+        type: "emailId",
+        message: "Email id already exists.",
       });
     else {
       let hashedpass = await bcrypt.hash(password, 10);
+      var username = emailId.split("@")[0];
+      const checkuser = await User.findOne({ username: username });
+      if (checkuser) {
+        username = username + Math.random().toFixed(2) * 100;
+      }
       const user_ = new User({
         emailId: emailId,
         password: hashedpass,
-        username: emailId,
-        mobileNo:emailId
+        username: username,
       });
       await user_.save();
+      const username_ = new Username({
+        username: username,
+      });
+      await username_.save();
       client.send(
         {
           text: `You otp is ${user_.verification.otp}`,
@@ -60,15 +71,14 @@ exports.signUp = async function (req, res) {
         },
         (err, message) => {
           res
-          .status(200)
-          .json({ token: null, user_, message: "Sign Up Successfull" });
+            .status(200)
+            .json({ token: null, user_, message: "Sign Up Successfull" });
           console.log(err || message);
         }
       );
-     
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(400).json({ message: "Please try again later" });
   }
 };
@@ -103,13 +113,15 @@ exports.SignIn = async function (req, res) {
           });
         }
       } else {
-        res.status(401).json({type:"password", message: "Invalid password" });
+        res.status(401).json({ type: "password", message: "Invalid password" });
       }
     } else {
-      res.status(401).json({type:"emailId" , message: "Email Id does not exists" });
+      res
+        .status(401)
+        .json({ type: "emailId", message: "Email Id does not exists" });
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(400).json({ message: "Please try again later" });
   }
 };
@@ -138,9 +150,8 @@ exports.verifyUser = async function (req, res) {
       return;
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(400).json({ message: "Please try again later" });
-
   }
 };
 
@@ -161,10 +172,12 @@ exports.ResetPassToken = async function (req, res) {
           console.log(err || message);
         }
       );
-console.log(user)
+      console.log(user);
       res.status(200).json({ message: "Reset link sent" });
     } else {
-      res.status(401).json({type:"emailId", message: "Email id does not exists" });
+      res
+        .status(401)
+        .json({ type: "emailId", message: "Email id does not exists" });
     }
   } catch (err) {
     console.log(err);
@@ -182,7 +195,7 @@ exports.ResetTokenVerify = async function (req, res) {
         user.resetPassword = {};
         await user.save();
       } else {
-        res.status(200).json({ status: true,user_emailid:user.emailId });
+        res.status(200).json({ status: true, user_emailid: user.emailId });
       }
     } else {
       res.status(401).json({ message: "Invalid Link" });
@@ -214,4 +227,15 @@ exports.ResetPass = async function (req, res) {
     }
   } catch (err) {}
 };
-console.log("priyam mc and randi")
+
+exports.CheckUsername = async function (req, res) {
+  try {
+    const username = req.params.username;
+    const user = await User.findOne({ username: username });
+    if (user) {
+      res.status(403).json({ message: "Username already taken." });
+    } else {
+      res.status(200).json({ message: "Username available" });
+    }
+  } catch (err) {}
+};

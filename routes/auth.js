@@ -8,6 +8,7 @@ const {
   ResetPassToken,
   ResetTokenVerify,
   me,
+  CheckUsername
 } = require("../handlers/auth");
 const auth = require("../middleware/auth");
 route.post("/signup", signUp);
@@ -17,5 +18,6 @@ route.post("/resetPassToken", ResetPassToken);
 route.get("/resetPassVerify/:resetToken", ResetTokenVerify);
 route.post("/resetPassword", ResetPass);
 route.get("/me", auth, me);
+route.get("/checkusername/:username",auth,CheckUsername)
 
 module.exports = route;

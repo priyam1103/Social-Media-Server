@@ -5,13 +5,29 @@ const { v4: uuidv4 } = require("uuid");
 const config = require("../service/config");
 const UserSchema = new mongoose.Schema(
   {
+    image: {
+      type: String,
+      default:"https://www.kindpng.com/picc/m/252-2524695_dummy-profile-image-jpg-hd-png-download.png"
+    },
     username: {
       type: String,
-      
+      unique: true,
+    },
+    name: {
+      type: String,
+      default: "",
     },
     password: {
       type: String,
       required: true,
+    },
+    website: {
+      type: String,
+      default: "",
+    },
+    bio: {
+      type: String,
+      default: "",
     },
     emailId: {
       type: String,
@@ -20,7 +36,7 @@ const UserSchema = new mongoose.Schema(
     },
     mobileNo: {
       type: String,
-      unique: true,
+      default: "",
     },
     verified: {
       type: Boolean,
@@ -46,6 +62,30 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    posts: {
+      type: Array,
+      default: [],
+    },
+    stories: {
+      type: Array,
+      default: [],
+    },
+    followers: {
+      type: Array,
+      default: [],
+    },
+    following: {
+      type: Array,
+      default: [],
+    },
+    likedposts: {
+      type: Array,
+      default: [],
+    },
+    notifications: {
+      type: Array,
+      default: [],
+    }
   },
   { timestamps: true }
 );

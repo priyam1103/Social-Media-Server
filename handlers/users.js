@@ -96,15 +96,16 @@ exports.getUsers = async function (req, res) {
     const user_data = await users.filter(
       (index) => index.username !== user.username
     );
+    //index.name.toLowerCase().includes(uname.toLowerCase())
     if (uname.trim().length > 3) {
       const fdata = user_data.filter(
         (index) =>
-          index.username.toLowerCase().includes(uname.toLowerCase()) ||
-          index.name.toLowerCase().includes(uname.toLowerCase())
+          index.username.toLowerCase().includes(uname.toLowerCase()) 
       );
       res.status(200).json({ fdata });
     } else res.status(400).json({ message: "No users found." });
   } catch (err) {
+  console.log(err)
     res.status(400).json({ message: "Error" });
   }
 };

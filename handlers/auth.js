@@ -4,8 +4,8 @@ const bcrypt = require("bcrypt");
 const config = require("../service/config");
 const { SMTPClient } = require("emailjs");
 const client = new SMTPClient({
-  user: "priyampoddar89@gmail.com",
-  password: "Dusky@7035",
+  user: config.EMAILID,
+  password: config.PASS,
   host: "smtp.gmail.com",
   ssl: true,
 });

@@ -3,9 +3,10 @@ const AWS = require("aws-sdk");
 const Post = require("../model/posts");
 
 const Username = require("../model/username");
+const config = require("../service/config");
 const s3 = new AWS.S3({
-  accessKeyId: "AKIA2KRMXY7JF2R366O4",
-  secretAccessKey: "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",
+  accessKeyId: config.ACCESSKEY,
+  secretAccessKey: config.SECRETACCESS,
   region: "us-east-2",
 });
 const s3link = "https://duskygram.s3.us-east-2.amazonaws.com/";

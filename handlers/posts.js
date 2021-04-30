@@ -2,9 +2,10 @@ const User = require("../model/user");
 const Post = require("../model/posts");
 const Stories = require("../model/stories");
 const AWS = require("aws-sdk");
+const config = require("../service/config");
 const s3 = new AWS.S3({
-  accessKeyId: "AKIA2KRMXY7JF2R366O4",
-  secretAccessKey: "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",
+  accessKeyId: config.ACCESSKEY,
+  secretAccessKey: config.SECRETACCESS,
   region: "us-east-2",
 });
 exports.addPost = async function (req, res) {
@@ -202,61 +203,6 @@ exports.getStories = async function (req, res) {
         res.status(200).json({ stories });
       }
 
-      // if (user.stories.length > 0) {
-      //   var s =[]
-      //   await user.stories.map(async (item, index) => {
-      //     s.push(await Stories.findById(item));
-      //     if (index == user.stories.length - 1) {
-      //       stories.push({username:user.username,userimage:user.image,stories:s});
-      //       if (user.following.length > 0) {
-
-      //         await user.following.map(async (item_, index_) => {
-      //           const cu = await User.findById(item_);
-      //           if (cu.stories.length > 0) {
-      //             var s = [];
-      //             await cu.stories.map(async (item__, index__) => {
-      //               s.push(await Stories.findById(item__));
-      //               if (
-      //                 index_ == user.following.length - 1 &&
-      //                 index__ == cu.stories.length - 1
-      //               ) {
-      //                 stories.push({username:cu.username,userimage:cu.image,stories:s});
-      //                 console.log(stories)
-      //                 res.status(200).json({ stories });
-      //               }
-      //             });
-      //           } else if (index_ == user.following.length - 1) {
-      //             res.status(200).json({ stories });
-      //           }
-      //         });
-      //       }else
-      //       res.status(200).json({ stories });
-      //     }
-      //   });
-      // } else if(user.following.length > 0) {
-      //     await user.following.map(async (item_, index_) => {
-      //       const cu = await User.findById(item_);
-      //       if (cu.stories.length > 0) {
-      //         var s=[]
-      //         await cu.stories.map(async (item__, index__) => {
-      //           s.push(await Stories.findById(item__));
-      //           if (
-      //             index_ == user.following.length - 1 &&
-      //             index__ == cu.stories.length - 1
-      //           ) {
-      //             await stories.push({username:cu.username,userimage:cu.image,stories:s});
-
-      //             res.status(200).json({ stories });
-      //           }
-      //         });
-      //       } else if (index_ == user.following.length - 1) {
-      //         res.status(200).json({ stories });
-      //       }
-      //     });
-
-      // } else {
-      //   res.status(200).json({stories})
-      // }
     }
   } catch (err) {}
 };
@@ -290,30 +236,7 @@ exports.getWallPosts = async function (req, res) {
             res.status(200).json({ posts });
           }
         }
-        // await user.following.map(async (item_, index_) => {
-        //   const cu = await User.findById(item_);
 
-        //   if (cu.posts.length > 0) {
-        //     console.log(cu.posts.length)
-        //     await cu.posts.map(async (item__, index__) => {
-        //       await posts.push({ post: await Post.findById(item__), postedbyusername: cu.username, postedbyimg: cu.image });
-        //       console.log(index_,user.following.length - 1)
-        //       if (
-        //         index_ == user.following.length - 1 &&
-        //         index__ == cu.posts.length - 1
-        //       ) {
-
-        //         res.status(200).json({ posts });
-        //       }
-        //       else {
-        //         return;
-        //       }
-        //     });
-        //   } else if (index_ == user.following.length - 1) {
-        //     console.log(cu.posts)
-        //     res.status(200).json({ posts });
-        //   }
-        // });
       } else {
         res.status(200).json({ posts });
       }

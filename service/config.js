@@ -8,7 +8,9 @@ const {
   PORT,
   JWT_SECRET,
   EMAIL,
-  PASS
+  PASS,
+  ACCESSKEY,
+  SECRETACCESS
 } = process.env;
 
 const config = {
@@ -16,6 +18,8 @@ const config = {
   PORT: PORT,
   JWT_SECRET: JWT_SECRET,
   EMAILID: EMAIL,
-  PASS:PASS
+  PASS: PASS,
+  ACCESSKEY:ACCESSKEY,
+  SECRETACCESS:SECRETACCESS
 };
 module.exports = config;

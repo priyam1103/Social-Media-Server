@@ -4,6 +4,7 @@ const Post = require("../model/posts");
 
 const Username = require("../model/username");
 const config = require("../service/config");
+const Chats = require("../model/chats");
 const s3 = new AWS.S3({
   accessKeyId: config.ACCESSKEY,
   secretAccessKey: config.SECRETACCESS,
@@ -99,14 +100,13 @@ exports.getUsers = async function (req, res) {
     );
     //index.name.toLowerCase().includes(uname.toLowerCase())
     if (uname.trim().length > 3) {
-      const fdata = user_data.filter(
-        (index) =>
-          index.username.toLowerCase().includes(uname.toLowerCase()) 
+      const fdata = user_data.filter((index) =>
+        index.username.toLowerCase().includes(uname.toLowerCase())
       );
       res.status(200).json({ fdata });
     } else res.status(400).json({ message: "No users found." });
   } catch (err) {
-  console.log(err)
+    console.log(err);
     res.status(400).json({ message: "Error" });
   }
 };
@@ -133,18 +133,15 @@ exports.getProfile = async function (req, res) {
       var posts = [];
 
       if (current_user.posts.length > 0) {
-        await current_user.posts.map(async (item, index) => {
-          posts.push(await Post.findById(item));
-          console.log(index, user.posts.length);
-          if (index == current_user.posts.length - 1) {
-            console.log(posts);
-            res.status(200).json({
-              current_user_profile: current_user,
-              following_this_user: following_this_user,
-              posts: posts,
-              myprofile: myprofile,
-            });
-          }
+        for (key in current_user.posts) {
+          console.log(key);
+          posts.push(await Post.findById(current_user.posts[key]));
+        }
+        res.status(200).json({
+          current_user_profile: current_user,
+          following_this_user: following_this_user,
+          posts: posts,
+          myprofile: myprofile,
         });
       } else {
         res.status(200).json({
@@ -177,7 +174,7 @@ exports.followunfollow = async function (req, res) {
       if (query === "follow") {
         update_following = user.following.concat(secondary_user._id);
         update_followers = secondary_user.followers.concat(user._id);
-       
+
         user_ = await User.findOneAndUpdate(
           {
             _id: id,
@@ -190,16 +187,14 @@ exports.followunfollow = async function (req, res) {
         var noti = {
           body: `${user_.username} started following you.`,
           image: user_.image,
-          type: 'follow',
-        }
-        const user_notification = secondary_user.notifications.concat(noti)
+          type: "follow",
+        };
+        const user_notification = secondary_user.notifications.concat(noti);
         await User.findOneAndUpdate(
           { _id: u_id },
-          { followers: update_followers,notifications:user_notification }
+          { followers: update_followers, notifications: user_notification }
         );
-        
-        
-  
+
         res.status(200).json({ user_ });
       } else if (query === "unfollow") {
         user.following.splice(user.following.indexOf(secondary_user._id), 1);
@@ -225,8 +220,65 @@ exports.followunfollow = async function (req, res) {
       }
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(400).json({ message: "Error" });
   }
 };
 
+// exports.getFollowers = async function (req, res) {
+
+//   try {
+//     const id = res.locals._id;
+//     const user = await User.findOne({ _id: id });
+//     if (user && user.following) {
+//       var followings = [];
+//       for (var i = 0; i < user.following.length; i++) {
+//         const f = await User.findById(user.following[i])
+//         followings.
+//       }
+//     }
+//   } catch (err) {
+
+//   }
+// }
+
+exports.getcreateChat = async function (req, res) {
+  try {
+    const { sid } = req.body;
+    const pid = res.locals._id;
+    const u1 = await User.findById(pid);
+    const u2 = await User.findById(sid);
+    const chat_ = await Chats.findOne({
+      $or: [
+        { sid: sid, pid: pid },
+        { pid: sid, sid: pid },
+      ],
+    });
+    if (chat_) {
+      res.status(200).json({ chatid: chat_._id });
+    } else {
+      const chat = new Chats({
+        pid: pid,
+        sid: sid,
+        peopleinchat: [
+          {
+            id: u1._id,
+            username: u1.username,
+            image: u1.image,
+            typing: false,
+          },
+          {
+            id: u2._id,
+            username: u2.username,
+            image: u2.image,
+            typing: false,
+          },
+        ],
+      });
+      await chat.save();
+      res.status(200).json({ chatid: chat._id });
+    }
+  } catch (err) {
+    console.log(err)
+  }
+};

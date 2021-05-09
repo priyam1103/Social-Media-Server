@@ -28,7 +28,7 @@ exports.me = async function (req, res) {
       res.status(401).json({ message: "Invalid session " });
     } else {
       const token = await user_.generateAuthToken();
-      console.log(user_);
+     // console.log(user_);
       res.status(200).json({ token, user_ });
     }
   } catch (err) {}
@@ -172,7 +172,6 @@ exports.ResetPassToken = async function (req, res) {
           console.log(err || message);
         }
       );
-      console.log(user);
       res.status(200).json({ message: "Reset link sent" });
     } else {
       res

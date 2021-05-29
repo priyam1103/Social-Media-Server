@@ -163,7 +163,7 @@ exports.ResetPassToken = async function (req, res) {
       const resetToken = await user.generateResetPasswordToken();
       client.send(
         {
-          text: `http://https://social-media-client.vercel.app/auth/reset-password/${resetToken}`,
+          text: `https://duskygram.vercel.app/auth/reset-password/${resetToken}`,
           from: "Duskygram",
           to: user.emailId,
           subject: "Duskygram - Reset Password Link",
